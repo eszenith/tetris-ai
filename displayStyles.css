@@ -1,0 +1,36 @@
+body {
+    background-color: antiquewhite;
+}
+
+.block {
+    display: inline-block;
+    background-color: black;
+}
+.block-on {
+    background-color: white;
+}
+
+.block-row {
+    height: 10px;  /* not the best way to do it */
+}
+.display {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.block-sml {
+    height : 10px;
+    width: 10px;
+}
+
+.block-med {
+    height : 20px;
+    width: 20px;
+}
+
+.block-big {
+    height : 30px;
+    width: 30px;
+}
+
+
