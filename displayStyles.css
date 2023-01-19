@@ -1,17 +1,41 @@
 body {
-    background-color: antiquewhite;
+    background-color: #0b2748;
 }
 
 .block {
     display: inline-block;
-    background-color: black;
+    border:1px solid #081b32;
+    background-color: #081b32;
 }
 .block-on {
     background-color: white;
 }
 
+.block-L {
+    background-color: #1c81cf;
+}
+
+.block-LR {
+    background-color: #f14561;
+}
+
+.block-O {
+    background-color: #18f398;
+}
+
+.block-S {
+    background-color: #7c00d6;
+}
+.block-Z {
+    background-color: #f49022;
+}
+
+.block-T {
+    background-color: #fffefe;
+}
+
 .block-row {
-    height: 10px;  /* not the best way to do it */
+    height: 15px;  /* not the best way to do it */
 }
 .display {
     display: inline-flex;
@@ -24,13 +48,15 @@ body {
 }
 
 .block-med {
-    height : 20px;
-    width: 20px;
+    height : 15px;
+    width: 15px;
 }
 
 .block-big {
     height : 30px;
     width: 30px;
 }
+
+
 
 

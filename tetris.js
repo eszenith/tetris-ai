@@ -9,7 +9,8 @@ blocks = {
             [[1,1,1],[0,0,1]],
             [[0,1,0],[0,1,0],[1,1,0]],
         ],
-        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]],
+        class:"block-LR",
     },
     L: {
         coord : [-9999,-9999],
@@ -21,7 +22,8 @@ blocks = {
             [[1,1,1], [1,0,0]],
             [[1,1,0],[0,1,0],[0,1,0]]    
         ],
-        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]],
+        class:"block-L",
     },
     O: {
         coord : [-9999,-9999],
@@ -30,7 +32,8 @@ blocks = {
         rotations : [
             [[1,1],[1,1]],
         ],
-        rotCenters : [[0,0]]
+        rotCenters : [[0,0]],
+        class:"block-O",
     },
     S: {
         coord : [-9999,-9999],
@@ -40,7 +43,8 @@ blocks = {
             [[0,1,1],[1,1,0]],
             [[1,0],[1,1],[0,1]],
         ],
-        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]],
+        class:"block-S",
     },
     Z: {
         coord : [-9999,-9999],
@@ -50,8 +54,10 @@ blocks = {
             [[1,1,0],[0,1,1]],
             [[0,1],[1,1],[1,0]],
         ],
-        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]],
+        class:"block-Z",
     },
+    /*
     T: {
         coord : [-9999,-9999],
         geom: 0,
@@ -62,8 +68,10 @@ blocks = {
             [[1,1,1],[0,1,0]],
             [[0,1],[1,1],[0,1]],
         ],
-        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
-    },
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]],
+        class:"block-T",
+    },*/
+    /*
     I: {
         coord : [-9999,-9999],
         geom: 0,
@@ -74,6 +82,7 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]]
     },
+    */
 };
 
 let currentBlockInUse = true;
@@ -128,7 +137,7 @@ function checkBlockFeasable(block, row , col) {
     return true;
 }
 
-function drawClearBlock(block, row , col){
+function drawClearBlock(block, row , col, setInGrid = false, draw = true){
     
     //if row col undefined then we need to clear the block
     if(row == null && col == null) {
@@ -136,9 +145,11 @@ function drawClearBlock(block, row , col){
         col = block.coord[1];
     }
     else {
+        //works if we found collision with grid 
         if(!checkBlockFeasable(block, row , col)){
-            currentBlockInUse = false;
-            drawClearBlock(block, null, null);
+            if(draw)
+                currentBlockInUse = false;
+            drawClearBlock(block, null, null, true);
             return;
         }
     }
@@ -153,7 +164,12 @@ function drawClearBlock(block, row , col){
         for (let pixel of row) {
             if (pixel == 1) {
                 //console.log(" coord : " + startPixelRow + " , " + startPixelCol + " :: " + pixel);
-                togglePixel(startPixelRow, startPixelCol);
+                if(setInGrid) {
+                    setPixelOnGrid(startPixelRow,startPixelCol);
+                }
+                if(draw) {
+                    togglePixel(startPixelRow, startPixelCol, block.class);
+                }
             }
             startPixelCol += 1;
         }
@@ -165,7 +181,7 @@ function drawClearBlock(block, row , col){
 function moveBlock(block, row, col) {
 
     //before drawing a pixel check if no block in way of drawing then do below code
-    if(block.coord[0] != -9999) {
+    if(block.coord[0] != -9999 || block.coord[1] != -9999) {
         //clears previous drawn block
         drawClearBlock(block);
     }
