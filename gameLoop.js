@@ -2,7 +2,7 @@
 let screenStartCol = 10
 let startCoord = [0, screenStartCol];
 let AIflag = true;
-let currentBlock = blocks.S;
+let currentBlock = blocks.T;
 let start = true;
 
 let loopIntervalID = setInterval(() => {
@@ -112,8 +112,8 @@ function gameAI() {
         drawClearBlock(currentBlock, startRow, startCol+1, true, false);
 
         for(let i=0;i<displayWidth;i++) {
-            if (performanceMeasures.height<(displayHeight+1)- topFilledRowInCol[i]) {
-                performanceMeasures.height = (displayHeight+1)- topFilledRowInCol[i];
+            if (performanceMeasures.height<(displayHeight)- topFilledRowInCol[i]) {
+                performanceMeasures.height = (displayHeight)- topFilledRowInCol[i];
             }
         }
 

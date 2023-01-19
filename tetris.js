@@ -1,5 +1,5 @@
 blocks = {
-    LR: {
+   LR: {
         coord : [-9999,-9999],
         geom: 0,
         geom_prev: -9999,
@@ -57,7 +57,6 @@ blocks = {
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-Z",
     },
-    /*
     T: {
         coord : [-9999,-9999],
         geom: 0,
@@ -70,7 +69,7 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-T",
-    },*/
+    },
     /*
     I: {
         coord : [-9999,-9999],
