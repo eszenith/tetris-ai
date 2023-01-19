@@ -1,6 +1,8 @@
 blocks = {
-    L: {
+    LR: {
+        coord : [-9999,-9999],
         geom: 0,
+        geom_prev: -9999,
         rotations : [
             [[1,0,0],[1,1,1]],
             [[0,1,1],[0,1,0],[0,1,0]],
@@ -9,31 +11,148 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]]
     },
+    L: {
+        coord : [-9999,-9999],
+        geom: 0,
+        geom_prev: -9999,
+        rotations : [
+            [[0,0,1],[1,1,1]],
+            [[0,1,0],[0,1,0],[0,1,1]],
+            [[1,1,1], [1,0,0]],
+            [[1,1,0],[0,1,0],[0,1,0]]    
+        ],
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
+    },
+    O: {
+        coord : [-9999,-9999],
+        geom: 0,
+        geom_prev: -9999,
+        rotations : [
+            [[1,1],[1,1]],
+        ],
+        rotCenters : [[0,0]]
+    },
+    S: {
+        coord : [-9999,-9999],
+        geom: 0,
+        geom_prev: -9999,
+        rotations : [
+            [[0,1,1],[1,1,0]],
+            [[1,0],[1,1],[0,1]],
+        ],
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
+    },
+    Z: {
+        coord : [-9999,-9999],
+        geom: 0,
+        geom_prev: -9999,
+        rotations : [
+            [[1,1,0],[0,1,1]],
+            [[0,1],[1,1],[1,0]],
+        ],
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
+    },
+    T: {
+        coord : [-9999,-9999],
+        geom: 0,
+        geom_prev: -9999,
+        rotations : [
+            [[0,1,0],[1,1,1]],
+            [[1,0],[1,1],[1,0]],
+            [[1,1,1],[0,1,0]],
+            [[0,1],[1,1],[0,1]],
+        ],
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
+    },
+    I: {
+        coord : [-9999,-9999],
+        geom: 0,
+        geom_prev: -9999,
+        rotations : [
+            [[1,1,1,1]],
+            [[1],[1],[1],[1]],
+        ],
+        rotCenters : [[1,1],[1,1],[0,1],[1,1]]
+    },
 };
 
-startColumn = 16;
+let currentBlockInUse = true;
+
+function reInitBlocks() {
+    Object.keys(blocks).forEach(function(key) {
+        blocks[key].coord = [-9999,-9999];
+        blocks[key].geom = 0
+    });
+}
 
 function rotateBlockRight(block){
+    drawClearBlock(block);
     block.geom = (block.geom +1)%block.rotations.length;
+    drawClearBlock(block);
 }
 
 function rotateBlockLeft(block){
+    drawClearBlock(block);
     index= block.geom -1;
-    
+
     if(index < 0 ){
         index = block.rotations.length - 1;
     }
     block.geom = (index)%block.rotations.length;
+    drawClearBlock(block);
+    
 }
 
-function drawClearBlock(block, row, col) {
-    startPixelCol = col - 1;
-    startPixelRow = row;
+function checkBlockFeasable(block, row , col) {
+    if(row == null && col == null) {
+        row = block.coord[0];
+        col = block.coord[1];
+    }
+    let startPixelCol = col - 1;
+    let startPixelRow = row;
+    //console.log("--------------");;
+
     for (let row of block.rotations[block.geom]) {
         startPixelCol = col - 1;
         for (let pixel of row) {
             if (pixel == 1) {
-                console.log(" coord : " + startPixelRow + " , " + startPixelCol + " :: " + pixel);
+                //console.log(" coord : " + startPixelRow + " , " + startPixelCol + " :: " + pixel);
+                if (getPixel(startPixelRow, startPixelCol)){
+                    return false;
+                }
+            }
+            startPixelCol += 1;
+        }
+        startPixelRow += 1;
+    }
+    return true;
+}
+
+function drawClearBlock(block, row , col){
+    
+    //if row col undefined then we need to clear the block
+    if(row == null && col == null) {
+        row = block.coord[0];
+        col = block.coord[1];
+    }
+    else {
+        if(!checkBlockFeasable(block, row , col)){
+            currentBlockInUse = false;
+            drawClearBlock(block, null, null);
+            return;
+        }
+    }
+    let startPixelCol = col - 1;
+    let startPixelRow = row;
+
+    //console.log("--------------");;
+
+    for (let row of block.rotations[block.geom]) {
+        startPixelCol = col - 1;
+        
+        for (let pixel of row) {
+            if (pixel == 1) {
+                //console.log(" coord : " + startPixelRow + " , " + startPixelCol + " :: " + pixel);
                 togglePixel(startPixelRow, startPixelCol);
             }
             startPixelCol += 1;
@@ -41,3 +160,18 @@ function drawClearBlock(block, row, col) {
         startPixelRow += 1;
     }
 }
+
+//clears the previous drawn block and and draws new block
+function moveBlock(block, row, col) {
+
+    //before drawing a pixel check if no block in way of drawing then do below code
+    if(block.coord[0] != -9999) {
+        //clears previous drawn block
+        drawClearBlock(block);
+    }
+
+    drawClearBlock(block,row,col);
+
+    block.coord = [row , col];
+}
+

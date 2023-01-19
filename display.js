@@ -3,7 +3,7 @@
 const displyDiv = document.querySelector(".display");
 
 const displayHeight = 54, displayWidth = 32;
-
+// 54 32
 let elementMap = [], blocks = [], bitMap = [];
 
 function createBlock() {
@@ -19,7 +19,10 @@ function createBlockRow() {
 }
 
 function getPixel(i, j) {
-    if (elementMap[i][j].classList.contains('block-on')) {
+    if (i >= displayHeight || j >= displayWidth) {
+        return true
+    }
+    else if (elementMap[i][j].classList.contains('block-on')) {
         return true;
     }
     return false;
