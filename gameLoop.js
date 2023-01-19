@@ -67,9 +67,9 @@ function checkInputDown() {
     return '';
 }
 
-let maxColRot = [0,0];
+let maxColRot = [0, 0];
 function gameAI() {
-    if(!AIflag) {
+    if (!AIflag) {
         return;
     }
     let performanceMeasures = {
@@ -86,56 +86,60 @@ function gameAI() {
 
     let maxVal = -999;
     let topFilledRowInColTemp = [];
-    maxColRot = [0,0];
+    maxColRot = [0, 0];
     //generate each feasable position and check which is best
 
     //take upper boundary of grid
     let maxRow = 32;
-    for(let i=0;i<displayWidth;i++) {
-        if (maxRow>topFilledRowInCol[i]) {
+    for (let i = 0; i < displayWidth; i++) {
+        if (maxRow > topFilledRowInCol[i]) {
             maxRow = topFilledRowInCol[i];
         }
     }
+    /*for (let rot = 0; rot < currentBlock.rotations.length; rot++) {
+        //change rotation of block
+        currentBlock.geom = rot;*/
     //displayWidth-1 not best way to deal with edge case
-    for(let col = 0;col<displayWidth-1;col++) {
-        let startRow = topFilledRowInCol[col]-currentBlock.rotations[currentBlock.geom].length;
-        let startCol = col-1;
+    for (let col = 0; col < displayWidth - 1; col++) {
+        let startRow = topFilledRowInCol[col] - currentBlock.rotations[currentBlock.geom].length;
+        let startCol = col - 1;
 
         performanceMeasures.height = 0;
         performanceMeasures.completeLines = 0;
 
-        if(startCol < 0 || (startCol+currentBlock.rotations[currentBlock.geom][0].length-1)>=displayWidth ) {
+        if (startCol < 0 || (startCol + currentBlock.rotations[currentBlock.geom][0].length - 1) >= displayWidth) {
             continue;
         }
         topFilledRowInColTemp = topFilledRowInCol.slice();
 
-        drawClearBlock(currentBlock, startRow, startCol+1, true, false);
+        drawClearBlock(currentBlock, startRow, startCol + 1, true, false);
 
-        for(let i=0;i<displayWidth;i++) {
-            if (performanceMeasures.height<(displayHeight)- topFilledRowInCol[i]) {
-                performanceMeasures.height = (displayHeight)- topFilledRowInCol[i];
+        for (let i = 0; i < displayWidth; i++) {
+            if (performanceMeasures.height < (displayHeight) - topFilledRowInCol[i]) {
+                performanceMeasures.height = (displayHeight) - topFilledRowInCol[i];
             }
         }
 
-        for(let j = maxRow;j<displayHeight;j++) {
+        for (let j = maxRow; j < displayHeight; j++) {
             let rowSum = 0;
-            for(let k =0;k<displayWidth;k++) {
+            for (let k = 0; k < displayWidth; k++) {
                 rowSum += bitMap[j][k];
-            }   
-            if(rowSum === displayWidth){
+            }
+            if (rowSum === displayWidth) {
                 performanceMeasures.completeLines += 1;
             }
         }
 
-        if (maxVal < constants.a*performanceMeasures.height+constants.b*performanceMeasures.completeLines) {
-            maxVal = constants.a*performanceMeasures.height+constants.b*performanceMeasures.completeLines;
+        if (maxVal < constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines) {
+            maxVal = constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines;
             maxColRot = [col, 0];
         }
         //clear from grid
-        drawClearBlock(currentBlock, startRow, startCol+1, true, false);
+        drawClearBlock(currentBlock, startRow, startCol + 1, true, false);
         topFilledRowInCol = topFilledRowInColTemp.slice();
 
     }
+    // }
     AIflag = false;
     return maxColRot;
 }
@@ -143,13 +147,16 @@ function gameAI() {
 function moveToPosition() {
     let bestCol = maxColRot[0];
     let bestRot = maxColRot[1];
-    if(!AIflag && currentBlockInUse) {
-        if(currentBlock.coord[1] != bestCol) {
+    if (!AIflag && currentBlockInUse) {
+        /*if(currentBlock.geom != bestRot) {
+            rotateBlockRight(currentBlock);
+        }*/
+        if (currentBlock.coord[1] != bestCol) {
             if (bestCol < currentBlock.coord[1]) {
-                moveBlock(currentBlock, currentBlock.coord[0],currentBlock.coord[1]-1);
+                moveBlock(currentBlock, currentBlock.coord[0], currentBlock.coord[1] - 1);
             }
             if (bestCol > currentBlock.coord[1]) {
-                moveBlock(currentBlock,  currentBlock.coord[0],currentBlock.coord[1]+1);
+                moveBlock(currentBlock, currentBlock.coord[0], currentBlock.coord[1] + 1);
             }
         }
     }
@@ -178,14 +185,14 @@ function checkBlockInUse() {
 function gameCycle() {
     checkBlockInUse();
     if (currentBlockInUse) {
-        if(start) {
-            moveBlock(currentBlock,startCoord[0],startCoord[1]);
+        if (start) {
+            moveBlock(currentBlock, startCoord[0], startCoord[1]);
             start = false;
         }
         gameAI();
         moveToPosition();
         moveBlock(currentBlock, startCoord[0], currentBlock.coord[1]);
-    }   
+    }
     startCoord[0] += 1;
 
 }

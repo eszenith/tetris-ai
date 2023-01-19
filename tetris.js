@@ -1,5 +1,5 @@
 blocks = {
-   LR: {
+   /*LR: {
         coord : [-9999,-9999],
         geom: 0,
         geom_prev: -9999,
@@ -11,7 +11,7 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-LR",
-    },
+    },*/
     L: {
         coord : [-9999,-9999],
         geom: 0,
@@ -35,6 +35,7 @@ blocks = {
         rotCenters : [[0,0]],
         class:"block-O",
     },
+    /*
     S: {
         coord : [-9999,-9999],
         geom: 0,
@@ -45,7 +46,7 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-S",
-    },
+    },*/
     Z: {
         coord : [-9999,-9999],
         geom: 0,
@@ -80,8 +81,8 @@ blocks = {
             [[1],[1],[1],[1]],
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]]
-    },
-    */
+    },*/
+    
 };
 
 let currentBlockInUse = true;
