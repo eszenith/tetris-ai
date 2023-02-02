@@ -12,6 +12,7 @@ blocks = {
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-LR",
     },*/
+    /*
     L: {
         coord : [-9999,-9999],
         geom: 0,
@@ -24,7 +25,7 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-L",
-    },
+    },*/
     O: {
         coord : [-9999,-9999],
         geom: 0,
@@ -47,7 +48,7 @@ blocks = {
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-S",
     },*/
-    Z: {
+    /*Z: {
         coord : [-9999,-9999],
         geom: 0,
         geom_prev: -9999,
@@ -57,7 +58,8 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-Z",
-    },
+    },*/
+    /*
     T: {
         coord : [-9999,-9999],
         geom: 0,
@@ -71,6 +73,7 @@ blocks = {
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-T",
     },
+    */
     /*
     I: {
         coord : [-9999,-9999],
@@ -150,6 +153,7 @@ function drawClearBlock(block, row , col, setInGrid = false, draw = true){
             if(draw)
                 currentBlockInUse = false;
             drawClearBlock(block, null, null, true);
+            checkAndClearLine();
             return;
         }
     }
@@ -189,5 +193,22 @@ function moveBlock(block, row, col) {
     drawClearBlock(block,row,col);
 
     block.coord = [row , col];
+}
+
+function checkAndClearLine() {
+    //not best way to start search for complete lines can be made more efficient
+    for(let i = 0;i<displayHeight;i++) {
+        let completeFlag = 1;
+        let clearLine = i;
+        for(let j=0;j<displayWidth;j++) {
+            if( bitMap[i][j] === 0) {
+                completeFlag = 0;
+                break;
+            }
+        }
+        if(completeFlag) {
+            makeGridFallAbove(clearLine);
+        }
+    }
 }
 

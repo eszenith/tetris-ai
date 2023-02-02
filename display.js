@@ -56,6 +56,20 @@ function togglePixel(i, j, classToAdd) {
     return false;
 }
 
+function makeGridFallAbove(completeIndex) {
+    for(let i = completeIndex;i>0;i--) {
+        for(let j = 0;j<displayWidth;j++) {
+            elementMap[i][j].classList = elementMap[i-1][j].classList;
+            bitMap[i][j] = bitMap[i-1][j];
+        }
+    }
+    for(let j = 0;j<displayWidth;j++) {
+        topFilledRowInCol[j] = topFilledRowInCol[j]+1;
+    }
+    
+
+}
+
 function setPixelOnGrid(i, j) {
     if (i < displayHeight && j < displayWidth) {
         if(bitMap[i][j] == 1)

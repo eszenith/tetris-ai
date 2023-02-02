@@ -2,13 +2,34 @@
 let screenStartCol = 10
 let startCoord = [0, screenStartCol];
 let AIflag = true;
-let currentBlock = blocks.T;
+let currentBlock = blocks.O;
 let start = true;
+const slowButton = document.querySelector(".button-slow");
+const fastButton = document.querySelector(".button-fast");
+let gameSpeed = 100;
+
+slowButton.addEventListener("click" , function() {
+    gameSpeed = gameSpeed/4;
+    clearInterval(loopIntervalID);
+    loopIntervalID = setInterval(() => {
+        gameCycle();
+    
+    }, gameSpeed);
+});
+
+fastButton.addEventListener("click" , function() {
+    console.log("clicked fast button");
+    gameSpeed = gameSpeed*4;
+    clearInterval(loopIntervalID);
+    loopIntervalID = setInterval(() => {
+        gameCycle();
+    }, gameSpeed);
+});
 
 let loopIntervalID = setInterval(() => {
     gameCycle();
 
-}, 100);
+}, gameSpeed);
 
 var randomProperty = function (obj) {
     var keys = Object.keys(obj);
@@ -68,7 +89,9 @@ function checkInputDown() {
 }
 
 let maxColRot = [0, 0];
+
 function gameAI() {
+    console.log("--------------called Game AI---------- ");
     if (!AIflag) {
         return;
     }
@@ -80,7 +103,7 @@ function gameAI() {
 
     let constants = {
         a: -0.5,
-        b: 0.7,
+        b: 0.8,
         c: 1
     };
 
@@ -100,10 +123,10 @@ function gameAI() {
         //change rotation of block
         currentBlock.geom = rot;*/
     //displayWidth-1 not best way to deal with edge case
-    for (let col = 0; col < displayWidth - 1; col++) {
-        let startRow = topFilledRowInCol[col] - currentBlock.rotations[currentBlock.geom].length;
+    for (let col = 0; col < displayWidth; col++) {
+        
         let startCol = col - 1;
-
+        let startRow = topFilledRowInCol[startCol] - currentBlock.rotations[currentBlock.geom].length;
         performanceMeasures.height = 0;
         performanceMeasures.completeLines = 0;
 
@@ -119,12 +142,13 @@ function gameAI() {
                 performanceMeasures.height = (displayHeight) - topFilledRowInCol[i];
             }
         }
-
+        
         for (let j = maxRow; j < displayHeight; j++) {
             let rowSum = 0;
             for (let k = 0; k < displayWidth; k++) {
                 rowSum += bitMap[j][k];
             }
+
             if (rowSum === displayWidth) {
                 performanceMeasures.completeLines += 1;
             }
@@ -185,10 +209,12 @@ function checkBlockInUse() {
 function gameCycle() {
     checkBlockInUse();
     if (currentBlockInUse) {
+
         if (start) {
             moveBlock(currentBlock, startCoord[0], startCoord[1]);
             start = false;
         }
+
         gameAI();
         moveToPosition();
         moveBlock(currentBlock, startCoord[0], currentBlock.coord[1]);
