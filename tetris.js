@@ -1,5 +1,6 @@
 blocks = {
-   /*LR: {
+    
+   LR: {
         coord : [-9999,-9999],
         geom: 0,
         geom_prev: -9999,
@@ -11,8 +12,7 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-LR",
-    },*/
-    /*
+    },
     L: {
         coord : [-9999,-9999],
         geom: 0,
@@ -25,7 +25,7 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-L",
-    },*/
+    },
     O: {
         coord : [-9999,-9999],
         geom: 0,
@@ -36,7 +36,6 @@ blocks = {
         rotCenters : [[0,0]],
         class:"block-O",
     },
-    /*
     S: {
         coord : [-9999,-9999],
         geom: 0,
@@ -47,8 +46,8 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-S",
-    },*/
-    /*Z: {
+    },
+    Z: {
         coord : [-9999,-9999],
         geom: 0,
         geom_prev: -9999,
@@ -58,8 +57,7 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-Z",
-    },*/
-    /*
+    },/*
     T: {
         coord : [-9999,-9999],
         geom: 0,
@@ -73,15 +71,14 @@ blocks = {
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-T",
     },
-    */
-    /*
+    
     I: {
         coord : [-9999,-9999],
         geom: 0,
         geom_prev: -9999,
         rotations : [
-            [[1,1,1,1]],
             [[1],[1],[1],[1]],
+            [[1,1,1,1]],
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]]
     },*/
@@ -150,10 +147,12 @@ function drawClearBlock(block, row , col, setInGrid = false, draw = true){
     else {
         //works if we found collision with grid 
         if(!checkBlockFeasable(block, row , col)){
-            if(draw)
-                currentBlockInUse = false;
             drawClearBlock(block, null, null, true);
-            checkAndClearLine();
+            if(draw)
+            {
+                currentBlockInUse = false;
+                checkAndClearLine();
+            }
             return;
         }
     }
@@ -166,7 +165,7 @@ function drawClearBlock(block, row , col, setInGrid = false, draw = true){
         startPixelCol = col - 1;
         
         for (let pixel of row) {
-            if (pixel == 1) {
+            if (pixel === 1) {
                 //console.log(" coord : " + startPixelRow + " , " + startPixelCol + " :: " + pixel);
                 if(setInGrid) {
                     setPixelOnGrid(startPixelRow,startPixelCol);

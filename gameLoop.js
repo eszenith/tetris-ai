@@ -2,24 +2,24 @@
 let screenStartCol = 10
 let startCoord = [0, screenStartCol];
 let AIflag = true;
-let currentBlock = blocks.O;
+let currentBlock = blocks.Z;
 let start = true;
 const slowButton = document.querySelector(".button-slow");
 const fastButton = document.querySelector(".button-fast");
 let gameSpeed = 100;
 
-slowButton.addEventListener("click" , function() {
-    gameSpeed = gameSpeed/4;
+slowButton.addEventListener("click", function () {
+    gameSpeed = gameSpeed / 4;
     clearInterval(loopIntervalID);
     loopIntervalID = setInterval(() => {
         gameCycle();
-    
+
     }, gameSpeed);
 });
 
-fastButton.addEventListener("click" , function() {
+fastButton.addEventListener("click", function () {
     console.log("clicked fast button");
-    gameSpeed = gameSpeed*4;
+    gameSpeed = gameSpeed * 4;
     clearInterval(loopIntervalID);
     loopIntervalID = setInterval(() => {
         gameCycle();
@@ -102,8 +102,8 @@ function gameAI() {
     };
 
     let constants = {
-        a: -0.5,
-        b: 0.8,
+        a: -0.1,
+        b: 100,
         c: 1
     };
 
@@ -119,58 +119,83 @@ function gameAI() {
             maxRow = topFilledRowInCol[i];
         }
     }
-    /*for (let rot = 0; rot < currentBlock.rotations.length; rot++) {
+    let prev_geom = currentBlock.geom;
+    for (let rot = 0; rot < currentBlock.rotations.length; rot++) {
         //change rotation of block
-        currentBlock.geom = rot;*/
-    //displayWidth-1 not best way to deal with edge case
-    for (let col = 0; col < displayWidth; col++) {
-        
-        let startCol = col - 1;
-        let startRow = topFilledRowInCol[startCol] - currentBlock.rotations[currentBlock.geom].length;
-        performanceMeasures.height = 0;
-        performanceMeasures.completeLines = 0;
+        currentBlock.geom = rot;
+        //displayWidth-1 not best way to deal with edge case
+        for (let col = 0; col < displayWidth; col++) {
 
-        if (startCol < 0 || (startCol + currentBlock.rotations[currentBlock.geom][0].length - 1) >= displayWidth) {
-            continue;
-        }
-        topFilledRowInColTemp = topFilledRowInCol.slice();
+            let startCol = col - 1;
 
-        drawClearBlock(currentBlock, startRow, startCol + 1, true, false);
-
-        for (let i = 0; i < displayWidth; i++) {
-            if (performanceMeasures.height < (displayHeight) - topFilledRowInCol[i]) {
-                performanceMeasures.height = (displayHeight) - topFilledRowInCol[i];
+            //this code is for blocks like Z where we need to calculate startRow by checking exactyl what is 
+            // not a block in block geometry such that it can be hooked at proper loction
+            let noBlockCount = 0;
+            let flag1 = false
+            for (let blockRow = 0; blockRow < currentBlock.rotations[currentBlock.geom].length; blockRow++) {
+                if (flag1) {
+                    noBlockCount++;
+                }
+                if (currentBlock.rotations[currentBlock.geom][blockRow][0] === 1) {
+                    flag1 = true;
+                }
             }
-        }
-        
-        for (let j = maxRow; j < displayHeight; j++) {
-            let rowSum = 0;
-            for (let k = 0; k < displayWidth; k++) {
-                rowSum += bitMap[j][k];
+            let startRowStart = (topFilledRowInCol[startCol] - currentBlock.rotations[currentBlock.geom].length)
+            let startRowEnd = (topFilledRowInCol[startCol] - currentBlock.rotations[currentBlock.geom].length) + noBlockCount;
+            
+            for (let startRow = startRowStart; startRow <= startRowEnd; startRow++) {
+
+                performanceMeasures.height = 0;
+                performanceMeasures.completeLines = 0;
+
+                if (startCol < 0 || (startCol + currentBlock.rotations[currentBlock.geom][0].length - 1) >= displayWidth) {
+                    continue;
+                }
+                topFilledRowInColTemp = topFilledRowInCol.slice();
+
+                drawClearBlock(currentBlock, startRow, startCol + 1, true, false);
+
+                for (let i = 0; i < displayWidth; i++) {
+                    if (performanceMeasures.height < (displayHeight) - topFilledRowInCol[i]) {
+                        performanceMeasures.height = (displayHeight) - topFilledRowInCol[i];
+                    }
+                }
+
+                for (let j = maxRow; j < displayHeight; j++) {
+                    let rowSum = 0;
+                    for (let k = 0; k < displayWidth; k++) {
+                        rowSum += bitMap[j][k];
+                    }
+
+                    if (rowSum === displayWidth) {
+                        performanceMeasures.completeLines += 1;
+                    }
+                }
+
+                if (maxVal < constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines) {
+                    maxVal = constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines;
+                    maxColRot = [col, rot];
+                }
+                //clear from grid
+                drawClearBlock(currentBlock, startRow, startCol + 1, true, false);
+                topFilledRowInCol = topFilledRowInColTemp.slice();
             }
 
-            if (rowSum === displayWidth) {
-                performanceMeasures.completeLines += 1;
-            }
         }
-
-        if (maxVal < constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines) {
-            maxVal = constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines;
-            maxColRot = [col, 0];
-        }
-        //clear from grid
-        drawClearBlock(currentBlock, startRow, startCol + 1, true, false);
-        topFilledRowInCol = topFilledRowInColTemp.slice();
-
     }
-    // }
     AIflag = false;
+    //since we rotated block only for checking not drawing we just change the variable back to what it was
+    currentBlock.geom = prev_geom;
     return maxColRot;
 }
 
 function moveToPosition() {
     let bestCol = maxColRot[0];
     let bestRot = maxColRot[1];
+    //this deals with actual rotation needed to get to desired output
+    if (currentBlock.geom != bestRot)
+        rotateBlockRight(currentBlock);
+
     if (!AIflag && currentBlockInUse) {
         /*if(currentBlock.geom != bestRot) {
             rotateBlockRight(currentBlock);
