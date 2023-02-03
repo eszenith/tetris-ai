@@ -106,14 +106,14 @@ function gameAI() {
         height: 0,
         completeLines: 0,
         holes: 0,
-        bumpiness : 0,
+        bumpiness: 0,
     };
 
     let constants = {
-        a: -0.1,
-        b: 2,
-        c: -0.3,
-        d:-0.2,
+        a: -0.4,
+        b: 70,
+        c: -0.5,
+        d: -0.2,
     };
 
     let maxVal = -999;
@@ -151,9 +151,9 @@ function gameAI() {
             }
             let startRowStart = (topFilledRowInCol[startCol] - currentBlock.rotations[currentBlock.geom].length)
             let startRowEnd = (topFilledRowInCol[startCol] - currentBlock.rotations[currentBlock.geom].length) + noBlockCount;
-            
+
             for (let startRow = startRowStart; startRow <= startRowEnd; startRow++) {
-                if(startRow >= displayHeight){
+                if (startRow >= displayHeight) {
                     continue;
                 }
                 performanceMeasures.height = 0;
@@ -166,7 +166,10 @@ function gameAI() {
                 }
                 topFilledRowInColTemp = topFilledRowInCol.slice();
 
-                drawClearBlock(currentBlock, startRow, startCol + 1, true, false);
+                //draw call doesnot succeed no need use this iteration
+                if(!drawClearBlock(currentBlock, startRow, startCol + 1, true, false)) {
+                    continue;
+                }
 
                 // calculate max height
                 for (let i = 0; i < displayWidth; i++) {
@@ -189,24 +192,31 @@ function gameAI() {
 
                 // calculate holes
                 let blockHeight = currentBlock.rotations[currentBlock.geom].length;
-                for(let i = maxRow-blockHeight; i<displayHeight-1;i++) {
-                    if(i<0){
+                /*for (let i = maxRow - blockHeight; i < displayHeight - 1; i++) {
+                    if (i < 0) {
                         continue;
                     }
-                    for(let j = 0;j<displayWidth;j++) {
-                        if(bitMap[i][j] === 1 && bitMap[i+1][j] === 0) {
-                            performanceMeasures.holes +=1;
+                    for (let j = 0; j < displayWidth; j++) {
+                        if (bitMap[i][j] === 1 && bitMap[i + 1][j] === 0) {
+                            performanceMeasures.holes += 1;
                         }
+                    }
+                }*/
+                for(let j = 0;j<topFilledRowInCol.length;j++) {
+                    for(let i = topFilledRowInCol[j];i<displayHeight;i++) {
+                       if( bitMap[i][j] === 0) {
+                            performanceMeasures.holes += 1;
+                       }
                     }
                 }
 
                 //calculate bumpiness
-                for(let i = 0;i<displayWidth-1;i++) {
-                    performanceMeasures.bumpiness += Math.abs(topFilledRowInCol[i]-topFilledRowInCol[i+1])
+                for (let i = 0; i < displayWidth - 1; i++) {
+                    performanceMeasures.bumpiness += Math.abs(topFilledRowInCol[i] - topFilledRowInCol[i + 1])
                 }
 
-                if (maxVal < constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines+ constants.c*performanceMeasures.holes + constants.d*performanceMeasures.bumpiness) {
-                    maxVal = constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines + constants.c*performanceMeasures.holes+ constants.d*performanceMeasures.bumpiness;
+                if (maxVal < constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines + constants.c * performanceMeasures.holes + constants.d * performanceMeasures.bumpiness) {
+                    maxVal = constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines + constants.c * performanceMeasures.holes + constants.d * performanceMeasures.bumpiness;
                     maxColRot = [col, rot];
                 }
                 //clear from grid
@@ -269,7 +279,12 @@ function gameCycle() {
     if (currentBlockInUse) {
 
         if (start) {
-            moveBlock(currentBlock, startCoord[0], startCoord[1]);
+            try {
+                moveBlock(currentBlock, startCoord[0], startCoord[1]);
+            }
+            catch(err) {
+                debugger;
+            }
             start = false;
         }
 

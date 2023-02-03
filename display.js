@@ -11,14 +11,14 @@ function clearBitMap() {
     rowSum = [];
     topFilledRowInCol = [];
 
-    for(let j=0;j<displayWidth;j++) {
+    for (let j = 0; j < displayWidth; j++) {
         topFilledRowInCol.push(32);
     }
 
-    for(let i = 0;i<displayHeight;i++) {
+    for (let i = 0; i < displayHeight; i++) {
         bitMap.push([])
         rowSum.push(0);
-        for(let j=0;j<displayWidth;j++) {
+        for (let j = 0; j < displayWidth; j++) {
             bitMap[i].push(0);
         }
     }
@@ -57,31 +57,36 @@ function togglePixel(i, j, classToAdd) {
 }
 
 function makeGridFallAbove(completeIndex) {
-    for(let i = completeIndex;i>0;i--) {
-        for(let j = 0;j<displayWidth;j++) {
-            elementMap[i][j].classList = elementMap[i-1][j].classList;
-            bitMap[i][j] = bitMap[i-1][j];
+    for (let i = completeIndex; i > 0; i--) {
+        for (let j = 0; j < displayWidth; j++) {
+            elementMap[i][j].classList = elementMap[i - 1][j].classList;
+            bitMap[i][j] = bitMap[i - 1][j];
         }
     }
-    for(let j = 0;j<displayWidth;j++) {
-        topFilledRowInCol[j] = topFilledRowInCol[j]+1;
+    for (let j = 0; j < displayWidth; j++) {
+        topFilledRowInCol[j] = topFilledRowInCol[j] + 1;
     }
-    
+
 
 }
 
 function setPixelOnGrid(i, j) {
-    if (i < displayHeight && j < displayWidth) {
-        if(bitMap[i][j] == 1)
-            bitMap[i][j] = 0;
-        else
-            bitMap[i][j] = 1;
+    try {
+        if (i < displayHeight && j < displayWidth) {
+            if (bitMap[i][j] == 1)
+                bitMap[i][j] = 0;
+            else
+                bitMap[i][j] = 1;
 
-        if(topFilledRowInCol[j]>i) {
-            topFilledRowInCol[j] = i;
+            if (topFilledRowInCol[j] > i) {
+                topFilledRowInCol[j] = i;
+            }
         }
     }
-    rowSum[i]+=1;
+    catch(err) {
+        debugger;
+    }
+    rowSum[i] += 1;
 }
 
 function clearPixel(i, j) {

@@ -118,13 +118,14 @@ function checkBlockFeasable(block, row , col) {
         row = block.coord[0];
         col = block.coord[1];
     }
+    let startRow = row;
     let startPixelCol = col - 1;
     let startPixelRow = row;
     //console.log("--------------");;
 
-    for (let row of block.rotations[block.geom]) {
+    for (let blockRow of block.rotations[block.geom]) {
         startPixelCol = col - 1;
-        for (let pixel of row) {
+        for (let pixel of blockRow) {
             if (pixel == 1) {
                 //console.log(" coord : " + startPixelRow + " , " + startPixelCol + " :: " + pixel);
                 if (getPixel(startPixelRow, startPixelCol)){
@@ -135,6 +136,17 @@ function checkBlockFeasable(block, row , col) {
         }
         startPixelRow += 1;
     }
+    /*
+    //where ever the block is being placed we also check position above it if there is already a block 
+    for(let i = col-1;i<=startPixelCol;i++) {
+        for(let j = startRow-1;j>=0;j--) {
+            if(bitMap[j][i] === 1){
+                debugger;
+                console.log("did not found feasable at "+ i+" : "+j+"   row: "+startRow+ " : "+startPixelCol);
+                return false;
+            }
+        }
+    }*/
     return true;
 }
 
@@ -148,13 +160,13 @@ function drawClearBlock(block, row , col, setInGrid = false, draw = true){
     else {
         //works if we found collision with grid 
         if(!checkBlockFeasable(block, row , col)){
-            drawClearBlock(block, null, null, true);
             if(draw)
             {
+                drawClearBlock(block, null, null, true);
                 currentBlockInUse = false;
                 checkAndClearLine();
             }
-            return;
+            return false;
         }
     }
     let startPixelCol = col - 1;
@@ -179,6 +191,7 @@ function drawClearBlock(block, row , col, setInGrid = false, draw = true){
         }
         startPixelRow += 1;
     }
+    return true;
 }
 
 //clears the previous drawn block and and draws new block
