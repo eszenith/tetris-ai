@@ -105,13 +105,15 @@ function gameAI() {
     let performanceMeasures = {
         height: 0,
         completeLines: 0,
-        holes: 0
+        holes: 0,
+        bumpiness : 0,
     };
 
     let constants = {
-        a: -0.4,
-        b: 70,
-        c: -0.5
+        a: -0.1,
+        b: 2,
+        c: -0.3,
+        d:-0.2,
     };
 
     let maxVal = -999;
@@ -157,6 +159,7 @@ function gameAI() {
                 performanceMeasures.height = 0;
                 performanceMeasures.completeLines = 0;
                 performanceMeasures.holes = 0;
+                performanceMeasures.bumpiness = 0;
 
                 if (startCol < 0 || (startCol + currentBlock.rotations[currentBlock.geom][0].length - 1) >= displayWidth) {
                     continue;
@@ -196,8 +199,14 @@ function gameAI() {
                         }
                     }
                 }
-                if (maxVal < constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines+ constants.c*performanceMeasures.holes) {
-                    maxVal = constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines + constants.c*performanceMeasures.holes;
+
+                //calculate bumpiness
+                for(let i = 0;i<displayWidth-1;i++) {
+                    performanceMeasures.bumpiness += Math.abs(topFilledRowInCol[i]-topFilledRowInCol[i+1])
+                }
+
+                if (maxVal < constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines+ constants.c*performanceMeasures.holes + constants.d*performanceMeasures.bumpiness) {
+                    maxVal = constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines + constants.c*performanceMeasures.holes+ constants.d*performanceMeasures.bumpiness;
                     maxColRot = [col, rot];
                 }
                 //clear from grid
