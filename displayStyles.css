@@ -117,4 +117,8 @@ body {
   transform: translateY(0);
 }
 
+.score-span {
+    color:white;
+}
+
 

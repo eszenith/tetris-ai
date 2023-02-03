@@ -57,7 +57,7 @@ blocks = {
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-Z",
-    },/*
+    },
     T: {
         coord : [-9999,-9999],
         geom: 0,
@@ -81,11 +81,12 @@ blocks = {
             [[1,1,1,1]],
         ],
         rotCenters : [[1,1],[1,1],[0,1],[1,1]]
-    },*/
+    },
     
 };
 
 let currentBlockInUse = true;
+const scoreSpan = document.querySelector(".score-span");
 
 function reInitBlocks() {
     Object.keys(blocks).forEach(function(key) {
@@ -194,6 +195,8 @@ function moveBlock(block, row, col) {
     block.coord = [row , col];
 }
 
+let totalScore = 0;
+
 function checkAndClearLine() {
     //not best way to start search for complete lines can be made more efficient
     for(let i = 0;i<displayHeight;i++) {
@@ -207,6 +210,8 @@ function checkAndClearLine() {
         }
         if(completeFlag) {
             makeGridFallAbove(clearLine);
+            totalScore += 100;
+            scoreSpan.innerHTML = totalScore;
         }
     }
 }

@@ -6,6 +6,7 @@ let currentBlock = blocks.Z;
 let start = true;
 const slowButton = document.querySelector(".button-slow");
 const fastButton = document.querySelector(".button-fast");
+const stopButton = document.querySelector(".button-stop");
 let gameSpeed = 100;
 
 slowButton.addEventListener("click", function () {
@@ -24,6 +25,12 @@ fastButton.addEventListener("click", function () {
     loopIntervalID = setInterval(() => {
         gameCycle();
     }, gameSpeed);
+});
+
+stopButton.addEventListener("click", function () {
+    console.log("clicked fast button");
+    gameSpeed = gameSpeed * 4;
+    clearInterval(loopIntervalID);
 });
 
 let loopIntervalID = setInterval(() => {
@@ -102,9 +109,9 @@ function gameAI() {
     };
 
     let constants = {
-        a: -0.1,
-        b: 100,
-        c: 1
+        a: -0.4,
+        b: 70,
+        c: -0.5
     };
 
     let maxVal = -999;
@@ -124,7 +131,7 @@ function gameAI() {
         //change rotation of block
         currentBlock.geom = rot;
         //displayWidth-1 not best way to deal with edge case
-        for (let col = 0; col < displayWidth; col++) {
+        for (let col = 0; col <= displayWidth; col++) {
 
             let startCol = col - 1;
 
@@ -144,9 +151,12 @@ function gameAI() {
             let startRowEnd = (topFilledRowInCol[startCol] - currentBlock.rotations[currentBlock.geom].length) + noBlockCount;
             
             for (let startRow = startRowStart; startRow <= startRowEnd; startRow++) {
-
+                if(startRow >= displayHeight){
+                    continue;
+                }
                 performanceMeasures.height = 0;
                 performanceMeasures.completeLines = 0;
+                performanceMeasures.holes = 0;
 
                 if (startCol < 0 || (startCol + currentBlock.rotations[currentBlock.geom][0].length - 1) >= displayWidth) {
                     continue;
@@ -155,12 +165,14 @@ function gameAI() {
 
                 drawClearBlock(currentBlock, startRow, startCol + 1, true, false);
 
+                // calculate max height
                 for (let i = 0; i < displayWidth; i++) {
                     if (performanceMeasures.height < (displayHeight) - topFilledRowInCol[i]) {
                         performanceMeasures.height = (displayHeight) - topFilledRowInCol[i];
                     }
                 }
 
+                //calculate complete lines
                 for (let j = maxRow; j < displayHeight; j++) {
                     let rowSum = 0;
                     for (let k = 0; k < displayWidth; k++) {
@@ -172,8 +184,20 @@ function gameAI() {
                     }
                 }
 
-                if (maxVal < constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines) {
-                    maxVal = constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines;
+                // calculate holes
+                let blockHeight = currentBlock.rotations[currentBlock.geom].length;
+                for(let i = maxRow-blockHeight; i<displayHeight-1;i++) {
+                    if(i<0){
+                        continue;
+                    }
+                    for(let j = 0;j<displayWidth;j++) {
+                        if(bitMap[i][j] === 1 && bitMap[i+1][j] === 0) {
+                            performanceMeasures.holes +=1;
+                        }
+                    }
+                }
+                if (maxVal < constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines+ constants.c*performanceMeasures.holes) {
+                    maxVal = constants.a * performanceMeasures.height + constants.b * performanceMeasures.completeLines + constants.c*performanceMeasures.holes;
                     maxColRot = [col, rot];
                 }
                 //clear from grid
