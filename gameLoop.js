@@ -10,6 +10,13 @@ const stopButton = document.querySelector(".button-stop");
 const reButton = document.querySelector(".button-restart");
 let gameSpeed = 100;
 
+let constants = {
+    a: 0,
+    b: 0,
+    c: 0,
+    d: 0,
+};
+
 slowButton.addEventListener("click", function () {
     gameSpeed = gameSpeed / 4;
     clearInterval(loopIntervalID);
@@ -38,10 +45,11 @@ reButton.addEventListener("click", function () {
     restartGame();
 });
 
+/*
 let loopIntervalID = setInterval(() => {
     gameCycle();
 
-}, gameSpeed);
+}, gameSpeed);*/
 
 var randomProperty = function (obj) {
     var keys = Object.keys(obj);
@@ -112,13 +120,6 @@ function gameAI() {
         completeLines: 0,
         holes: 0,
         bumpiness: 0,
-    };
-
-    let constants = {
-        a: -0.4,
-        b: 70,
-        c: -0.8,
-        d: -0.2,
     };
 
     let maxVal = -999;
@@ -286,17 +287,18 @@ function checkBlockInUse() {
 
 function checkGameOver() {
     if (gameOverFlag) {
-        clearInterval(loopIntervalID);
+        //clearInterval(loopIntervalID);
         return true;
     }
     return false;
 }
 
 function gameCycle() {
-    checkBlockInUse();
     if (checkGameOver()) {
         return;
     }
+    checkBlockInUse();
+
     if (currentBlockInUse) {
 
         if (start) {
@@ -310,21 +312,32 @@ function gameCycle() {
         }
 
         gameAI();
+        try{
         moveToPosition();
+        }
+        catch(err) {
+            gameOverFlag = true;
+        }
         moveBlock(currentBlock, startCoord[0], currentBlock.coord[1]);
     }
     startCoord[0] += 1;
 
 }
 
-function restartGame() {
+function restartGame(setInt = true) {
     clearBoardBitMap();
     scoreSpan.innerHTML = "0";
     currentBlockInUse = false
     gameSpeed = 100;
-    clearInterval(loopIntervalID)
+    //clearInterval(loopIntervalID)
     gameOverFlag = false;
-    loopIntervalID = setInterval(() => {
+    
+    if(setInt)
+        setIntervalForGame(gameSpeed);
+}
+
+function setIntervalForGame(speed) {
+    return setInterval(() => {
         gameCycle();
-    }, gameSpeed);
+    }, speed);
 }

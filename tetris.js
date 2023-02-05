@@ -171,6 +171,10 @@ function drawClearBlock(block, row , col, setInGrid = false, draw = true){
         if(!checkBlockFeasable(block, row , col)){
             if(draw)
             {
+                //increase score for each placed block
+                //totalScore += 1;
+                scoreSpan.innerHTML = parseInt(scoreSpan.innerHTML)+1;
+
                 drawClearBlock(block, null, null, true);
                 currentBlockInUse = false;
                 checkAndClearLine();
@@ -238,8 +242,8 @@ function checkAndClearLine() {
         }
         if(completeFlag) {
             makeGridFallAbove(clearLine);
-            totalScore += 100;
-            scoreSpan.innerHTML = totalScore;
+            //totalScore += 100;
+            scoreSpan.innerHTML = parseInt(scoreSpan.innerHTML)+100;
         }
     }
 }
