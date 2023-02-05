@@ -76,7 +76,7 @@ body {
 /* CSS */
 .button-28 {
   appearance: none;
-  background-color: transparent;
+  background-color: rgb(255, 255, 255);
   border: 2px solid #1A1A1A;
   border-radius: 15px;
   box-sizing: border-box;
@@ -119,6 +119,10 @@ body {
 
 .score-span {
     color:white;
+}
+
+.gameOver {
+    color:red;
 }
 
 

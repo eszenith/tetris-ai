@@ -1,9 +1,10 @@
 "use strict";
-let elementMap = [], blocks = [], bitMap = [], rowSum = [];
+let elementMap = [], blockTemp = [], bitMap = [], rowSum = [];
 let topFilledRowInCol = [];
 const displyDiv = document.querySelector(".display");
-
-const displayHeight = 32, displayWidth = 20;
+const gameOver = document.querySelector(".gameOver");
+let gameOverFlag = false;
+const displayHeight = 24, displayWidth = 14;
 clearBitMap();
 
 function clearBitMap() {
@@ -12,7 +13,7 @@ function clearBitMap() {
     topFilledRowInCol = [];
 
     for (let j = 0; j < displayWidth; j++) {
-        topFilledRowInCol.push(32);
+        topFilledRowInCol.push(displayHeight);
     }
 
     for (let i = 0; i < displayHeight; i++) {
@@ -80,10 +81,11 @@ function setPixelOnGrid(i, j) {
 
             if (topFilledRowInCol[j] > i) {
                 topFilledRowInCol[j] = i;
+
             }
         }
     }
-    catch(err) {
+    catch (err) {
         debugger;
     }
     rowSum[i] += 1;
@@ -96,14 +98,34 @@ function clearPixel(i, j) {
 }
 
 for (let i = 0; i < displayHeight; i++) {
-    blocks = [];
+    blockTemp = [];
     let blockrowElement = createBlockRow();
 
     for (let j = 0; j < displayWidth; j++) {
         let blockElement = createBlock();
         blockrowElement.append(blockElement);
-        blocks.push(blockElement);
+        blockTemp.push(blockElement);
     }
     displyDiv.append(blockrowElement);
-    elementMap.push(blocks);
+    elementMap.push(blockTemp);
+}
+
+function clearBoardBitMap() {
+    clearBitMap();
+    displyDiv.innerHTML = "";
+    elementMap = [];
+
+    for (let i = 0; i < displayHeight; i++) {
+        blockTemp = [];
+        let blockrowElement = createBlockRow();
+
+        for (let j = 0; j < displayWidth; j++) {
+            let blockElement = createBlock();
+            blockrowElement.append(blockElement);
+            blockTemp.push(blockElement);
+        }
+        displyDiv.append(blockrowElement);
+        elementMap.push(blockTemp);
+    }
+    gameOver.innerHTML = ""
 }

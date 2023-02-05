@@ -1,5 +1,5 @@
 "use strict";
-let screenStartCol = 10
+let screenStartCol = Math.ceil(displayWidth/2);
 let startCoord = [0, screenStartCol];
 let AIflag = true;
 let currentBlock = blocks.Z;
@@ -7,6 +7,7 @@ let start = true;
 const slowButton = document.querySelector(".button-slow");
 const fastButton = document.querySelector(".button-fast");
 const stopButton = document.querySelector(".button-stop");
+const reButton = document.querySelector(".button-restart");
 let gameSpeed = 100;
 
 slowButton.addEventListener("click", function () {
@@ -31,6 +32,10 @@ stopButton.addEventListener("click", function () {
     console.log("clicked fast button");
     gameSpeed = gameSpeed * 4;
     clearInterval(loopIntervalID);
+});
+
+reButton.addEventListener("click", function () {
+    restartGame();
 });
 
 let loopIntervalID = setInterval(() => {
@@ -112,7 +117,7 @@ function gameAI() {
     let constants = {
         a: -0.4,
         b: 70,
-        c: -0.5,
+        c: -0.8,
         d: -0.2,
     };
 
@@ -153,7 +158,7 @@ function gameAI() {
             let startRowEnd = (topFilledRowInCol[startCol] - currentBlock.rotations[currentBlock.geom].length) + noBlockCount;
 
             for (let startRow = startRowStart; startRow <= startRowEnd; startRow++) {
-                if (startRow >= displayHeight) {
+                if (startRow >= displayHeight || startRow < 0) {
                     continue;
                 }
                 performanceMeasures.height = 0;
@@ -166,9 +171,14 @@ function gameAI() {
                 }
                 topFilledRowInColTemp = topFilledRowInCol.slice();
 
-                //draw call doesnot succeed no need use this iteration
-                if(!drawClearBlock(currentBlock, startRow, startCol + 1, true, false)) {
-                    continue;
+                try {
+                    //draw call doesnot succeed no need use this iteration
+                    if (!drawClearBlock(currentBlock, startRow, startCol + 1, true, false)) {
+                        continue;
+                    }
+                }
+                catch (err) {
+                    debugger;
                 }
 
                 // calculate max height
@@ -202,11 +212,11 @@ function gameAI() {
                         }
                     }
                 }*/
-                for(let j = 0;j<topFilledRowInCol.length;j++) {
-                    for(let i = topFilledRowInCol[j];i<displayHeight;i++) {
-                       if( bitMap[i][j] === 0) {
+                for (let j = 0; j < topFilledRowInCol.length; j++) {
+                    for (let i = topFilledRowInCol[j]; i < displayHeight; i++) {
+                        if (bitMap[i][j] === 0) {
                             performanceMeasures.holes += 1;
-                       }
+                        }
                     }
                 }
 
@@ -274,15 +284,26 @@ function checkBlockInUse() {
     assignBlockAndRestart();
 }
 
+function checkGameOver() {
+    if (gameOverFlag) {
+        clearInterval(loopIntervalID);
+        return true;
+    }
+    return false;
+}
+
 function gameCycle() {
     checkBlockInUse();
+    if (checkGameOver()) {
+        return;
+    }
     if (currentBlockInUse) {
 
         if (start) {
             try {
                 moveBlock(currentBlock, startCoord[0], startCoord[1]);
             }
-            catch(err) {
+            catch (err) {
                 debugger;
             }
             start = false;
@@ -294,4 +315,16 @@ function gameCycle() {
     }
     startCoord[0] += 1;
 
+}
+
+function restartGame() {
+    clearBoardBitMap();
+    scoreSpan.innerHTML = "0";
+    currentBlockInUse = false
+    gameSpeed = 100;
+    clearInterval(loopIntervalID)
+    gameOverFlag = false;
+    loopIntervalID = setInterval(() => {
+        gameCycle();
+    }, gameSpeed);
 }

@@ -1,5 +1,4 @@
 blocks = {
-    
    LR: {
         coord : [-9999,-9999],
         geom: 0,
@@ -71,7 +70,6 @@ blocks = {
         rotCenters : [[1,1],[1,1],[0,1],[1,1]],
         class:"block-T",
     },
-    
     I: {
         coord : [-9999,-9999],
         geom: 0,
@@ -123,6 +121,21 @@ function checkBlockFeasable(block, row , col) {
     let startPixelRow = row;
     //console.log("--------------");;
 
+    if(block.coord[0] === 0) {
+        for (let i = 0;i<block.rotations[block.geom].length;i++) {
+            let colBeforeBlock = block.coord[1]-1;
+            while(colBeforeBlock >= 0) {
+                if(getPixel(i,colBeforeBlock) && bitMap[i][colBeforeBlock] === 1){
+                    if(col <= colBeforeBlock){
+                        return false;
+                    }
+                }
+                colBeforeBlock--;
+            }
+
+        }
+    }
+
     for (let blockRow of block.rotations[block.geom]) {
         startPixelCol = col - 1;
         for (let pixel of blockRow) {
@@ -131,22 +144,18 @@ function checkBlockFeasable(block, row , col) {
                 if (getPixel(startPixelRow, startPixelCol)){
                     return false;
                 }
+                let startPixelRow_temp = startPixelRow-1;
+                while(startPixelRow_temp > 0) {
+                    if(getPixel(startPixelRow_temp, startPixelCol) && bitMap[startPixelRow_temp][startPixelCol] === 1) {
+                        return false;
+                    }
+                    startPixelRow_temp--;
+                }
             }
             startPixelCol += 1;
         }
         startPixelRow += 1;
     }
-    /*
-    //where ever the block is being placed we also check position above it if there is already a block 
-    for(let i = col-1;i<=startPixelCol;i++) {
-        for(let j = startRow-1;j>=0;j--) {
-            if(bitMap[j][i] === 1){
-                debugger;
-                console.log("did not found feasable at "+ i+" : "+j+"   row: "+startRow+ " : "+startPixelCol);
-                return false;
-            }
-        }
-    }*/
     return true;
 }
 
@@ -165,6 +174,12 @@ function drawClearBlock(block, row , col, setInGrid = false, draw = true){
                 drawClearBlock(block, null, null, true);
                 currentBlockInUse = false;
                 checkAndClearLine();
+                
+                for(let i = 0;i<topFilledRowInCol.length;i++) {
+                    if(topFilledRowInCol[i] <= 1) {
+                        gameOverFlag = true;
+                    }
+                }   
             }
             return false;
         }
